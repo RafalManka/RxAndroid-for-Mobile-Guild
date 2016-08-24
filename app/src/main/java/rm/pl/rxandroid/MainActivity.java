@@ -46,19 +46,21 @@ public class MainActivity extends AppCompatActivity {
                 .filter(new Func1<Void, Boolean>() {
                     @Override
                     public Boolean call(Void aVoid) {
-                        Log.d(TAG, "Filter called");
+                        Log.d(TAG, "filter called");
                         return !ClickUtils.isDoubleClick();
                     }
                 })
                 .doOnNext(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        Log.d(TAG, "doOnNext called");
                         showProgress(true);
                     }
                 })
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
+                        Log.d(TAG, "Action1 called");
                         performActionButtonClicked();
                     }
                 });
@@ -70,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
+                Log.d(TAG, "performActionButtonClicked subscriber called");
                 subscriber.onNext(API.requestFacebookTokenSync());
+                subscriber.onCompleted();
             }
         })
                 .subscribeOn(Schedulers.newThread())
@@ -84,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 .concatMap(new Func1<User, Observable<User>>() {
                     @Override
                     public Observable<User> call(final User user) {
+                        Log.d(TAG, "concatMap called");
                         Observable<Message[]> messagesCall = Observable.create(new Observable.OnSubscribe<Message[]>() {
                             @Override
                             public void call(Subscriber<? super Message[]> subscriber) {
@@ -115,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 .doOnNext(new Action1<User>() {
                     @Override
                     public void call(User aVoid) {
+                        Log.d(TAG, "doOnNext called");
                         showProgress(false);
                     }
                 })
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void call(User o) {
                                 if (textView != null) {
+                                    Log.d(TAG, "Action1 user called");
                                     textView.setText(o.toString());
                                 }
                             }
@@ -130,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                         new Action1<Throwable>() {
                             @Override
                             public void call(Throwable throwable) {
+                                Log.d(TAG, "Action1 throwable called");
                                 Log.e(TAG, "Error called", throwable);
                                 onError(throwable);
                             }
@@ -148,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
             progress.setMessage("Loading...");
             progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progress.setIndeterminate(true);
+            progress.setCancelable(false);
             progress.show();
         } else if (!show && progress != null) {
             progress.dismiss();
