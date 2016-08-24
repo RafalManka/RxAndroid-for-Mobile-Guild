@@ -14,7 +14,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import rm.pl.rxandroid.model.Message;
 import rm.pl.rxandroid.model.Notification;
 import rm.pl.rxandroid.model.User;
-import rm.pl.rxandroid.utils.ClickUtils;
+import rm.pl.rxandroid.utils.ViewUtils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     @Nullable
     private ProgressDialog progress;
 
+    private int count;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public Boolean call(Void aVoid) {
                         Log.d(TAG, "filter called");
-                        return !ClickUtils.isDoubleClick();
+                        return !ViewUtils.isDoubleClick();
                     }
                 })
                 .doOnNext(new Action1<Void>() {
@@ -57,13 +59,21 @@ public class MainActivity extends AppCompatActivity {
                         showProgress(true);
                     }
                 })
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        Log.d(TAG, "Action1 called");
-                        performActionButtonClicked();
-                    }
-                });
+                .subscribe(
+                        new Action1<Void>() {
+                            @Override
+                            public void call(Void aVoid) {
+                                Log.d(TAG, "Action1 called");
+                                performActionButtonClicked();
+                            }
+                        },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                showProgress(false);
+                            }
+                        }
+                );
 
 
     }
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public User call(String string) {
                         Log.d(TAG, "User request called");
-                        return API.requestUserSync();
+                        return API.requestLoginSync();
                     }
                 })
                 .concatMap(new Func1<User, Observable<User>>() {
@@ -101,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void call(Subscriber<? super Notification[]> subscriber) {
                                 Log.d(TAG, "Notifications request called");
-                                subscriber.onNext(Notification.requestNotificationsSync());
+                                subscriber.onNext(API.requestNotificationsSync());
                                 subscriber.onCompleted();
                             }
                         });
@@ -139,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                             public void call(Throwable throwable) {
                                 Log.d(TAG, "Action1 throwable called");
                                 Log.e(TAG, "Error called", throwable);
+                                showProgress(false);
                                 onError(throwable);
                             }
                         }

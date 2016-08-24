@@ -38,15 +38,7 @@ public class Notification {
                 '}';
     }
 
-    public static Notification[] requestNotificationsSync() {
-        try {
-            Thread.sleep(RandomUtils.makeRandom());
-        } catch (InterruptedException ignored) {
-        }
-        return Notification.makeSome();
-    }
-
-    private static Notification[] makeSome() {
+    public static Notification[] makeSome() {
         return new Notification[]{
                 new Notification.Builder()
                         .title("Someone liked your product!")

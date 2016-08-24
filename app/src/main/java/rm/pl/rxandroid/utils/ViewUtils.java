@@ -5,7 +5,7 @@ import android.os.SystemClock;
 /**
  * Created by rafal on 8/23/16.
  */
-public class ClickUtils {
+public class ViewUtils {
 
     private static final int TIME_BETWEEN_CLICKS = 500;
     private static long mLastClickTime;

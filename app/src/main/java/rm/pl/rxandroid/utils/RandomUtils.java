@@ -9,7 +9,7 @@ public class RandomUtils {
     private static final int MAX = 5000;
     private static final int MIN = 1000;
 
-    public static long makeRandom() {
+    public static long randomWaitTime() {
         return new Random().nextInt(MAX) + MIN;
     }
 }
